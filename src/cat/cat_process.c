@@ -12,6 +12,8 @@ static void print_line_number(
         if (new_line && ch != '\n') {
             printf("%6d\t", *line_number);
             (*line_number)++;
+        } else if (new_line && ch == '\n' && (flags.e || flags.E)) {
+            printf("%6s\t", "");
         }
     } else if (flags.n) {
         if (new_line) {
@@ -23,20 +25,21 @@ static void print_line_number(
 
 static int squeeze_blank(
     int ch,
-    int *empty_lines,
+    int prev,
+    int *empty_count,
     CatFlags flags
 ) {
     int skip = 0;
 
     if (flags.s) {
-        if (ch == '\n') {
-            (*empty_lines)++;
+        if (ch == '\n' && prev == '\n') {
+            (*empty_count)++;
 
-            if (*empty_lines > 2) {
+            if (*empty_count > 1) {
                 skip = 1;
             }
         } else {
-            *empty_lines = 0;
+            *empty_count = 0;
         }
     }
 
@@ -71,16 +74,17 @@ void process_file(const char *filename, CatFlags flags) {
         int line_number = 1;
         int new_line = 1;
         int empty_lines = 0;
-        
+        int prev = '\n';
 
         while ((ch = fgetc(fp)) != EOF) {
-            if (!squeeze_blank(ch, &empty_lines, flags)) {
+
+            if (!squeeze_blank(ch, prev, &empty_lines, flags)) {
+
                 print_line_number(
                     ch,
                     &line_number,
                     new_line,
-                    flags
-                );
+                    flags);
 
                 print_char(ch, flags);
 
@@ -90,6 +94,8 @@ void process_file(const char *filename, CatFlags flags) {
                     new_line = 0;
                 }
             }
+
+            prev = ch;
         }
 
         fclose(fp);
