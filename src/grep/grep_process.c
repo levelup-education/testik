@@ -75,8 +75,8 @@ static void PrintMatchesForPattern(const char *filename, int line_number,
       PrintLinePrefix(filename, line_number, flags, show_filename);
     }
     if (match.rm_so >= 0 && match.rm_eo >= match.rm_so) {
-      fwrite(current + match.rm_so, 1,
-             (size_t)(match.rm_eo - match.rm_so), stdout);
+      fwrite(current + match.rm_so, 1, (size_t)(match.rm_eo - match.rm_so),
+             stdout);
     }
     putchar('\n');
     if (match.rm_eo == match.rm_so) {
@@ -166,9 +166,9 @@ static int ProcessFile(const char *filename, const grep_flags *flags,
     }
   }
 
-  int has_match = ProcessStream(fp, filename == NULL ? "" : filename, flags,
-                                compiled, compiled_count, show_filename,
-                                &matched_lines);
+  int has_match =
+      ProcessStream(fp, filename == NULL ? "" : filename, flags, compiled,
+                    compiled_count, show_filename, &matched_lines);
 
   if (fp != NULL && filename != NULL) {
     fclose(fp);

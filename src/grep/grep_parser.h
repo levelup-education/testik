@@ -18,8 +18,7 @@ typedef struct {
   int patterns_capacity;
 } grep_flags;
 
-int ParseArguments(int argc, char **argv, grep_flags *flags,
-                   int *file_index);
+int ParseArguments(int argc, char **argv, grep_flags *flags, int *file_index);
 void FreeGrepFlags(grep_flags *flags);
 
 #endif

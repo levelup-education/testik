@@ -2,19 +2,19 @@
 #include "cat_process.h"
 
 int main(int argc, char *argv[]) {
-    CatFlags flags = {0};
+  CatFlags flags = {0};
 
-    parse_flags(argc, argv, &flags);
+  parse_flags(argc, argv, &flags);
 
-    int i = 1;
+  int i = 1;
 
-    while (i < argc) {
-        if (argv[i][0] != '-') {
-            process_file(argv[i], flags);
-        }
-
-        i++;
+  while (i < argc) {
+    if (argv[i][0] != '-') {
+      process_file(argv[i], flags);
     }
 
-    return 0;
+    i++;
+  }
+
+  return 0;
 }

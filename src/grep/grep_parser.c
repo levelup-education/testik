@@ -24,8 +24,8 @@ static void InitFlags(grep_flags *flags) {
 
 static int AppendPattern(grep_flags *flags, const char *pattern) {
   if (flags->patterns_count >= flags->patterns_capacity) {
-    int new_capacity = (flags->patterns_capacity == 0) ? 4
-                                                        : flags->patterns_capacity * 2;
+    int new_capacity =
+        (flags->patterns_capacity == 0) ? 4 : flags->patterns_capacity * 2;
     char **tmp = realloc(flags->patterns, new_capacity * sizeof(char *));
     if (tmp == NULL) {
       return 0;
@@ -98,8 +98,7 @@ static void SetFlag(int option, grep_flags *flags) {
   if (option == 'o') flags->o = 1;
 }
 
-int ParseArguments(int argc, char **argv, grep_flags *flags,
-                   int *file_index) {
+int ParseArguments(int argc, char **argv, grep_flags *flags, int *file_index) {
   int option = 0;
 
   InitFlags(flags);
