@@ -1,6 +1,8 @@
 #include "cat_process.h"
 
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 static void print_line_number(int ch, int *line_number, int new_line,
                               CatFlags flags) {
@@ -79,5 +81,7 @@ void process_file(const char *filename, CatFlags flags) {
     }
 
     fclose(fp);
+  } else {
+    fprintf(stderr, "s21_cat: %s: %s\n", filename, strerror(errno));
   }
 }

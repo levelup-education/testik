@@ -107,6 +107,13 @@ int ParseArguments(int argc, char **argv, grep_flags *flags, int *file_index) {
     switch (option) {
       case 'e':
         flags->e = 1;
+        if (optarg == NULL || strlen(optarg) == 0) {
+          if (!flags->s) {
+            fprintf(stderr, "s21_grep: option requires an argument -- e\n");
+          }
+          FreeGrepFlags(flags);
+          return 0;
+        }
         if (!AppendPattern(flags, optarg)) {
           FreeGrepFlags(flags);
           return 0;

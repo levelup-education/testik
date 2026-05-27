@@ -1,5 +1,6 @@
 #include "grep_process.h"
 
+#include <errno.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -160,7 +161,7 @@ static int ProcessFile(const char *filename, const grep_flags *flags,
     fp = fopen(filename, "r");
     if (fp == NULL) {
       if (!flags->s) {
-        fprintf(stderr, "s21_grep: %s: cannot open\n", filename);
+        fprintf(stderr, "s21_grep: %s: %s\n", filename, strerror(errno));
       }
       return 0;
     }
