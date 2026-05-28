@@ -23,6 +23,9 @@ static void set_flag(char flag, CatFlags *flags) {
 
   } else if (flag == 'T') {
     flags->T = 1;
+
+  } else if (flag == 'v') {  // <-- ДОБАВИТЬ!
+    flags->v = 1;
   }
 }
 

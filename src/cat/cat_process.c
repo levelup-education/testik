@@ -39,20 +39,53 @@ static int squeeze_blank(int ch, int prev, int *empty_count, CatFlags flags) {
   return skip;
 }
 
-static void print_char(int ch, CatFlags flags) {
-  if ((flags.t || flags.T) && ch == '\t') {
-    printf("^I");
-
-  } else if ((flags.e || flags.E) && ch == '\n') {
-    printf("$\n");
-
-  } else if (flags.v && ch < 32 && ch != '\n' && ch != '\t') {
-    printf("^%c", ch + 64);
-
-  } else {
-    putchar(ch);
-  }
+void print_char(int ch, CatFlags flags) {
+    int show_nonprinting = flags.v || flags.t || flags.e;
+    
+    if (show_nonprinting) {
+        if (ch == '\t') {
+            if (flags.t || flags.T) {
+                printf("^I");
+            } else {
+                putchar(ch);
+            }
+        } else if (ch == '\n') {
+            if (flags.e || flags.E) {
+                putchar('$');
+            }
+            putchar('\n');
+        } else if (ch >= 32 && ch < 127) {
+            putchar(ch);
+        } else if (ch == 127) {
+            putchar('^');
+            putchar('?');
+        } else if (ch < 32) {
+            putchar('^');
+            putchar(ch + 64);
+        } else if (ch >= 128) {
+            printf("M-");
+            if (ch >= 128 + 32 && ch < 128 + 127) {
+                putchar(ch - 128);
+            } else if (ch == 128 + 127) {
+                putchar('^');
+                putchar('?');
+            } else {
+                putchar('^');
+                putchar(ch - 128 + 64);
+            }
+        }
+    } else {
+        if (ch == '\t' && flags.T) {
+            printf("^I");
+        } else if (ch == '\n' && flags.E) {
+            putchar('$');
+            putchar('\n');
+        } else {
+            putchar(ch);
+        }
+    }
 }
+
 
 void process_file(const char *filename, CatFlags flags) {
   FILE *fp = fopen(filename, "r");

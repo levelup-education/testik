@@ -1,3 +1,6 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
+
 #include "grep_parser.h"
 
 #include <errno.h>
@@ -22,6 +25,60 @@ static void InitFlags(grep_flags *flags) {
   flags->patterns_capacity = 0;
 }
 
+// Собственная реализация strdup для совместимости
+static char *my_strdup(const char *s) {
+  if (s == NULL) return NULL;
+  size_t len = strlen(s) + 1;
+  char *new = malloc(len);
+  if (new != NULL) {
+    memcpy(new, s, len);
+  }
+  return new;
+}
+
+// Чтение строки с динамическим выделением памяти
+static ssize_t my_getline(char **lineptr, size_t *n, FILE *stream) {
+  if (lineptr == NULL || n == NULL || stream == NULL) {
+    return -1;
+  }
+
+  size_t pos = 0;
+  int c;
+
+  if (*lineptr == NULL || *n == 0) {
+    *n = 128;
+    *lineptr = malloc(*n);
+    if (*lineptr == NULL) {
+      return -1;
+    }
+  }
+
+  while ((c = fgetc(stream)) != EOF) {
+    if (pos + 1 >= *n) {
+      size_t new_size = *n * 2;
+      char *new_ptr = realloc(*lineptr, new_size);
+      if (new_ptr == NULL) {
+        return -1;
+      }
+      *lineptr = new_ptr;
+      *n = new_size;
+    }
+
+    (*lineptr)[pos++] = (char)c;
+
+    if (c == '\n') {
+      break;
+    }
+  }
+
+  if (pos == 0 && c == EOF) {
+    return -1;
+  }
+
+  (*lineptr)[pos] = '\0';
+  return (ssize_t)pos;
+}
+
 static int AppendPattern(grep_flags *flags, const char *pattern) {
   if (flags->patterns_count >= flags->patterns_capacity) {
     int new_capacity =
@@ -34,7 +91,7 @@ static int AppendPattern(grep_flags *flags, const char *pattern) {
     flags->patterns_capacity = new_capacity;
   }
 
-  flags->patterns[flags->patterns_count] = strdup(pattern);
+  flags->patterns[flags->patterns_count] = my_strdup(pattern);
   if (flags->patterns[flags->patterns_count] == NULL) {
     return 0;
   }
@@ -58,7 +115,7 @@ static int ReadPatternsFromFile(const char *filename, grep_flags *flags,
   ssize_t read;
   int success = 1;
 
-  while ((read = getline(&line, &len, fp)) != -1) {
+  while ((read = my_getline(&line, &len, fp)) != -1) {
     if (read > 0 && line[read - 1] == '\n') {
       line[read - 1] = '\0';
     }
@@ -107,13 +164,6 @@ int ParseArguments(int argc, char **argv, grep_flags *flags, int *file_index) {
     switch (option) {
       case 'e':
         flags->e = 1;
-        if (optarg == NULL || strlen(optarg) == 0) {
-          if (!flags->s) {
-            fprintf(stderr, "s21_grep: option requires an argument -- e\n");
-          }
-          FreeGrepFlags(flags);
-          return 0;
-        }
         if (!AppendPattern(flags, optarg)) {
           FreeGrepFlags(flags);
           return 0;

@@ -1,28 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
+LDFLAGS = 
 
-TARGET = s21_grep
+# Для grep нужно добавить -D_GNU_SOURCE
+CFLAGS += -D_GNU_SOURCE
 
-SRC = s21_grep.c \
-      grep_parser.c \
-      grep_process.c
+all: s21_grep
 
-OBJ = $(SRC:.c=.o)
-
-all: $(TARGET)
-
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
+s21_grep: s21_grep.o grep_parser.o grep_process.o
+	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ)
-
-fclean: clean
-	rm -f $(TARGET)
-
-re: fclean all
-
-.PHONY: all clean fclean re
+	rm -f *.o s21_grep

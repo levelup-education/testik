@@ -1,6 +1,8 @@
 #ifndef GREP_PARSER_H
 #define GREP_PARSER_H
 
+#include <stddef.h>  // для size_t
+
 typedef struct {
   int e;
   int i;
