@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int CompilePatterns(const grep_flags *flags, regex_t **compiled) {
+static int CompilePatterns(const grep_flags* flags, regex_t** compiled) {
   int count = flags->patterns_count;
-  regex_t *regexes = malloc(sizeof(regex_t) * count);
+  regex_t* regexes = malloc(sizeof(regex_t) * count);
   if (regexes == NULL) {
     return 0;
   }
@@ -36,7 +36,7 @@ static int CompilePatterns(const grep_flags *flags, regex_t **compiled) {
   return 1;
 }
 
-static void FreeCompiledPatterns(regex_t *compiled, int count) {
+static void FreeCompiledPatterns(regex_t* compiled, int count) {
   if (compiled == NULL) {
     return;
   }
@@ -47,8 +47,8 @@ static void FreeCompiledPatterns(regex_t *compiled, int count) {
   free(compiled);
 }
 
-static void PrintLinePrefix(const char *filename, int line_number,
-                            const grep_flags *flags, int show_filename) {
+static void PrintLinePrefix(const char* filename, int line_number,
+                            const grep_flags* flags, int show_filename) {
   if (show_filename) {
     printf("%s:", filename);
   }
@@ -57,17 +57,17 @@ static void PrintLinePrefix(const char *filename, int line_number,
   }
 }
 
-static void PrintLine(const char *filename, int line_number,
-                      const grep_flags *flags, int show_filename,
-                      const char *line) {
+static void PrintLine(const char* filename, int line_number,
+                      const grep_flags* flags, int show_filename,
+                      const char* line) {
   PrintLinePrefix(filename, line_number, flags, show_filename);
   fputs(line, stdout);
 }
 
-static void PrintMatchesForPattern(const char *filename, int line_number,
-                                   const grep_flags *flags, int show_filename,
-                                   const regex_t *regex, const char *line) {
-  const char *current = line;
+static void PrintMatchesForPattern(const char* filename, int line_number,
+                                   const grep_flags* flags, int show_filename,
+                                   const regex_t* regex, const char* line) {
+  const char* current = line;
   regmatch_t match;
 
   while (regexec(regex, current, 1, &match,
@@ -91,18 +91,18 @@ static void PrintMatchesForPattern(const char *filename, int line_number,
   }
 }
 
-static void PrintMatches(const char *filename, int line_number,
-                         const grep_flags *flags, int show_filename,
-                         const regex_t *compiled, int compiled_count,
-                         const char *line) {
+static void PrintMatches(const char* filename, int line_number,
+                         const grep_flags* flags, int show_filename,
+                         const regex_t* compiled, int compiled_count,
+                         const char* line) {
   for (int i = 0; i < compiled_count; i++) {
     PrintMatchesForPattern(filename, line_number, flags, show_filename,
                            &compiled[i], line);
   }
 }
 
-static int MatchAnyPattern(const regex_t *compiled, int compiled_count,
-                           const char *line) {
+static int MatchAnyPattern(const regex_t* compiled, int compiled_count,
+                           const char* line) {
   for (int i = 0; i < compiled_count; i++) {
     if (regexec(&compiled[i], line, 0, NULL, 0) == 0) {
       return 1;
@@ -111,15 +111,19 @@ static int MatchAnyPattern(const regex_t *compiled, int compiled_count,
   return 0;
 }
 
-static int ProcessStream(FILE *stream, const char *filename,
-                         const grep_flags *flags, const regex_t *compiled,
+static int ProcessStream(FILE* stream, const char* filename,
+                         const grep_flags* flags, const regex_t* compiled,
                          int compiled_count, int show_filename,
-                         int *matched_lines) {
-  char *line = NULL;
+                         int* matched_lines) {
+  char* line = NULL;
   size_t length = 0;
   ssize_t read = 0;
   int line_number = 0;
   int has_match = 0;
+
+  if (flags->v && flags->o) {
+    return 0;
+  }
 
   while ((read = getline(&line, &length, stream)) != -1) {
     line_number++;
@@ -127,6 +131,7 @@ static int ProcessStream(FILE *stream, const char *filename,
     if (flags->v) {
       matched = !matched;
     }
+
     if (!matched) {
       continue;
     }
@@ -149,10 +154,10 @@ static int ProcessStream(FILE *stream, const char *filename,
   return has_match;
 }
 
-static int ProcessFile(const char *filename, const grep_flags *flags,
-                       const regex_t *compiled, int compiled_count,
-                       int show_filename, int *any_match) {
-  FILE *fp = NULL;
+static int ProcessFile(const char* filename, const grep_flags* flags,
+                       const regex_t* compiled, int compiled_count,
+                       int show_filename, int* any_match) {
+  FILE* fp = NULL;
   int matched_lines = 0;
 
   if (filename == NULL) {
@@ -203,8 +208,8 @@ static int ProcessFile(const char *filename, const grep_flags *flags,
   return has_match;
 }
 
-int RunGrep(grep_flags *flags, int argc, char **argv, int file_index) {
-  regex_t *compiled = NULL;
+int RunGrep(grep_flags* flags, int argc, char** argv, int file_index) {
+  regex_t* compiled = NULL;
   if (!CompilePatterns(flags, &compiled)) {
     return 2;
   }

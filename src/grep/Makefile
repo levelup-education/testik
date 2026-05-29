@@ -1,9 +1,8 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -std=c11
+CFLAGS = -Wall -Werror -Wextra -std=c11 -D_GNU_SOURCE
 LDFLAGS = 
 
-# Для grep нужно добавить -D_GNU_SOURCE
-CFLAGS += -D_GNU_SOURCE
+
 
 all: s21_grep
 

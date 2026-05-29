@@ -15,12 +15,12 @@ typedef struct {
   int f;
   int o;
 
-  char **patterns;
+  char** patterns;
   int patterns_count;
   int patterns_capacity;
 } grep_flags;
 
-int ParseArguments(int argc, char **argv, grep_flags *flags, int *file_index);
-void FreeGrepFlags(grep_flags *flags);
+int ParseArguments(int argc, char** argv, grep_flags* flags, int* file_index);
+void FreeGrepFlags(grep_flags* flags);
 
 #endif

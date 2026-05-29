@@ -1,7 +1,7 @@
 #include "cat_parser.h"
 #include "cat_process.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   CatFlags flags = {0};
 
   parse_flags(argc, argv, &flags);

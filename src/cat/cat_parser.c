@@ -1,6 +1,6 @@
 #include "cat_parser.h"
 
-static void set_flag(char flag, CatFlags *flags) {
+static void set_flag(char flag, CatFlags* flags) {
   if (flag == 'b') {
     flags->b = 1;
 
@@ -29,7 +29,7 @@ static void set_flag(char flag, CatFlags *flags) {
   }
 }
 
-void parse_flags(int argc, char *argv[], CatFlags *flags) {
+void parse_flags(int argc, char* argv[], CatFlags* flags) {
   int i = 1;
 
   while (i < argc) {

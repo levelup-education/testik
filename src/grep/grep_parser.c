@@ -1,5 +1,4 @@
 #define _POSIX_C_SOURCE 200809L
-#define _GNU_SOURCE
 
 #include "grep_parser.h"
 
@@ -9,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void InitFlags(grep_flags *flags) {
+static void InitFlags(grep_flags* flags) {
   flags->e = 0;
   flags->i = 0;
   flags->v = 0;
@@ -26,10 +25,10 @@ static void InitFlags(grep_flags *flags) {
 }
 
 // Собственная реализация strdup для совместимости
-static char *my_strdup(const char *s) {
+static char* my_strdup(const char* s) {
   if (s == NULL) return NULL;
   size_t len = strlen(s) + 1;
-  char *new = malloc(len);
+  char* new = malloc(len);
   if (new != NULL) {
     memcpy(new, s, len);
   }
@@ -37,7 +36,7 @@ static char *my_strdup(const char *s) {
 }
 
 // Чтение строки с динамическим выделением памяти
-static ssize_t my_getline(char **lineptr, size_t *n, FILE *stream) {
+static ssize_t my_getline(char** lineptr, size_t* n, FILE* stream) {
   if (lineptr == NULL || n == NULL || stream == NULL) {
     return -1;
   }
@@ -56,7 +55,7 @@ static ssize_t my_getline(char **lineptr, size_t *n, FILE *stream) {
   while ((c = fgetc(stream)) != EOF) {
     if (pos + 1 >= *n) {
       size_t new_size = *n * 2;
-      char *new_ptr = realloc(*lineptr, new_size);
+      char* new_ptr = realloc(*lineptr, new_size);
       if (new_ptr == NULL) {
         return -1;
       }
@@ -79,11 +78,11 @@ static ssize_t my_getline(char **lineptr, size_t *n, FILE *stream) {
   return (ssize_t)pos;
 }
 
-static int AppendPattern(grep_flags *flags, const char *pattern) {
+static int AppendPattern(grep_flags* flags, const char* pattern) {
   if (flags->patterns_count >= flags->patterns_capacity) {
     int new_capacity =
         (flags->patterns_capacity == 0) ? 4 : flags->patterns_capacity * 2;
-    char **tmp = realloc(flags->patterns, new_capacity * sizeof(char *));
+    char** tmp = realloc(flags->patterns, new_capacity * sizeof(char*));
     if (tmp == NULL) {
       return 0;
     }
@@ -100,9 +99,9 @@ static int AppendPattern(grep_flags *flags, const char *pattern) {
   return 1;
 }
 
-static int ReadPatternsFromFile(const char *filename, grep_flags *flags,
+static int ReadPatternsFromFile(const char* filename, grep_flags* flags,
                                 int silent) {
-  FILE *fp = fopen(filename, "r");
+  FILE* fp = fopen(filename, "r");
   if (fp == NULL) {
     if (!silent) {
       fprintf(stderr, "s21_grep: %s: %s\n", filename, strerror(errno));
@@ -110,7 +109,7 @@ static int ReadPatternsFromFile(const char *filename, grep_flags *flags,
     return 0;
   }
 
-  char *line = NULL;
+  char* line = NULL;
   size_t len = 0;
   ssize_t read;
   int success = 1;
@@ -130,7 +129,7 @@ static int ReadPatternsFromFile(const char *filename, grep_flags *flags,
   return success;
 }
 
-void FreeGrepFlags(grep_flags *flags) {
+void FreeGrepFlags(grep_flags* flags) {
   if (flags == NULL) {
     return;
   }
@@ -144,7 +143,7 @@ void FreeGrepFlags(grep_flags *flags) {
   flags->patterns_capacity = 0;
 }
 
-static void SetFlag(int option, grep_flags *flags) {
+static void SetFlag(int option, grep_flags* flags) {
   if (option == 'i') flags->i = 1;
   if (option == 'v') flags->v = 1;
   if (option == 'c') flags->c = 1;
@@ -155,7 +154,7 @@ static void SetFlag(int option, grep_flags *flags) {
   if (option == 'o') flags->o = 1;
 }
 
-int ParseArguments(int argc, char **argv, grep_flags *flags, int *file_index) {
+int ParseArguments(int argc, char** argv, grep_flags* flags, int* file_index) {
   int option = 0;
 
   InitFlags(flags);

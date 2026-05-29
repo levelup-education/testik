@@ -12,6 +12,6 @@ typedef struct {
   int v;
 } CatFlags;
 
-void parse_flags(int argc, char *argv[], CatFlags *flags);
+void parse_flags(int argc, char* argv[], CatFlags* flags);
 
 #endif

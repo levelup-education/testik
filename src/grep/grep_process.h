@@ -3,6 +3,6 @@
 
 #include "grep_parser.h"
 
-int RunGrep(grep_flags *flags, int argc, char **argv, int file_index);
+int RunGrep(grep_flags* flags, int argc, char** argv, int file_index);
 
 #endif

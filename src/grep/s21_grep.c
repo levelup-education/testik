@@ -3,7 +3,7 @@
 #include "grep_parser.h"
 #include "grep_process.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   grep_flags flags;
   int file_index = 0;
 
